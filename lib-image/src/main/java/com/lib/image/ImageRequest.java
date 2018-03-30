@@ -4,9 +4,10 @@ package com.lib.image;
 import android.content.Context;
 import android.widget.ImageView;
 
-import com.lib.image.annotation.ImageCacheStrategy;
-import com.lib.image.extend.BitmapCallback;
-import com.lib.image.extend.ImageAnimator;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.request.animation.ViewPropertyAnimation;
+import com.lib.image.callback.ResourceCallback;
 
 import java.io.File;
 
@@ -16,26 +17,28 @@ public class ImageRequest {
     private Context context;
     private ImageView imageView;
     private File file;
-    private BitmapCallback bitmapCallback;
-    private int bitmapCallbackHeight;
-    private int bitmapCallbackWidth;
-    private ImageAnimator imageAnimator;
+    private ResourceCallback resourceCallback;
+    private int height;
+    private int width;
+    private ViewPropertyAnimation.Animator animator;
     private int placeHolder;
     private int error;
-    private @ImageCacheStrategy int cacheStrategy;
+    private BitmapTransformation bitmapTransformation;
+    private DiskCacheStrategy cacheStrategy;
 
     public ImageRequest(Builder builder) {
         this.url = builder.url;
         this.context = builder.context;
         this.imageView = builder.imageView;
         this.file = builder.file;
-        this.bitmapCallback = builder.bitmapCallback;
-        this.bitmapCallbackWidth = builder.bitmapCallbackWidth;
-        this.bitmapCallbackHeight = builder.bitmapCallbackHeight;
-        this.imageAnimator = builder.imageAnimator;
+        this.resourceCallback = builder.resourceCallback;
+        this.width = builder.width;
+        this.height = builder.height;
+        this.animator = builder.animator;
         this.placeHolder = builder.placeHolder;
         this.error = builder.error;
         this.cacheStrategy = builder.cacheStrategy;
+        this.bitmapTransformation = builder.bitmapTransformation;
     }
 
     public String getUrl() {
@@ -54,20 +57,20 @@ public class ImageRequest {
         return file;
     }
 
-    public BitmapCallback getBitmapCallback() {
-        return bitmapCallback;
+    public ResourceCallback getResourceCallback() {
+        return resourceCallback;
     }
 
-    public int getBitmapCallbackWidth() {
-        return bitmapCallbackWidth;
+    public int getWidth() {
+        return width;
     }
 
-    public int getBitmapCallbackHeight() {
-        return bitmapCallbackHeight;
+    public int getHeight() {
+        return height;
     }
 
-    public ImageAnimator getImageAnimator() {
-        return imageAnimator;
+    public ViewPropertyAnimation.Animator getAnimator() {
+        return animator;
     }
 
     public int getPlaceHolder() {
@@ -78,9 +81,12 @@ public class ImageRequest {
         return error;
     }
 
-    public @ImageCacheStrategy
-    int getCacheStrategy() {
+    public DiskCacheStrategy getCacheStrategy() {
         return cacheStrategy;
+    }
+
+    public BitmapTransformation getBitmapTransformation() {
+        return bitmapTransformation;
     }
 
     public static final class Builder {
@@ -89,13 +95,14 @@ public class ImageRequest {
         private Context context;
         private ImageView imageView;
         private File file;
-        private BitmapCallback bitmapCallback;
-        private int bitmapCallbackWidth;
-        private int bitmapCallbackHeight;
-        private ImageAnimator imageAnimator;
+        private ResourceCallback resourceCallback;
+        private int width;
+        private int height;
         private int error;
         private int placeHolder;
-        private @ImageCacheStrategy int cacheStrategy;
+        private DiskCacheStrategy cacheStrategy;
+        private ViewPropertyAnimation.Animator animator;
+        private BitmapTransformation bitmapTransformation;
 
         public Builder url(String url) {
             this.url = url;
@@ -117,20 +124,20 @@ public class ImageRequest {
             return this;
         }
 
-        public Builder bitmapCallback(int width, int height, BitmapCallback bitmapCallback) {
-            this.bitmapCallbackWidth = width;
-            this.bitmapCallbackHeight = height;
-            this.bitmapCallback = bitmapCallback;
+        public Builder resourceCallback(int width, int height, ResourceCallback resourceCallback) {
+            this.width = width;
+            this.height = height;
+            this.resourceCallback = resourceCallback;
             return this;
         }
 
-        public Builder bitmapCallback(BitmapCallback bitmapCallback) {
-            this.bitmapCallback = bitmapCallback;
+        public Builder resourceCallback(ResourceCallback resourceCallback) {
+            this.resourceCallback = resourceCallback;
             return this;
         }
 
-        public Builder animator(ImageAnimator imageAnimator) {
-            this.imageAnimator = imageAnimator;
+        public Builder animator(ViewPropertyAnimation.Animator animator) {
+            this.animator = animator;
             return this;
         }
 
@@ -144,8 +151,13 @@ public class ImageRequest {
             return this;
         }
 
-        public Builder cacheStrategy(@ImageCacheStrategy int cacheStrategy) {
+        public Builder cacheStrategy(DiskCacheStrategy cacheStrategy) {
             this.cacheStrategy = cacheStrategy;
+            return this;
+        }
+
+        public Builder bitmapTransformation(BitmapTransformation bitmapTransformation) {
+            this.bitmapTransformation = bitmapTransformation;
             return this;
         }
 

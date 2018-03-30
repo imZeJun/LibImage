@@ -4,9 +4,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.lib.image.ImageExecutor;
 import com.lib.image.ImageRequest;
-import com.lib.image.annotation.ImageCacheStrategy;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
                 "http://i.imgur.com/DvpvklR.png",
                 0,
                 0,
-                ImageCacheStrategy.SOURCE,
                 mImageView);
     }
 
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         ImageRequest request = new ImageRequest.Builder()
                 .context(this)
                 .url("http://i.imgur.com/DvpvklR.png")
-                .cacheStrategy(ImageCacheStrategy.SOURCE)
+                .cacheStrategy(DiskCacheStrategy.SOURCE)
                 .imageView(mImageView)
                 .build();
         ImageExecutor.getInstance().loadImage(request);

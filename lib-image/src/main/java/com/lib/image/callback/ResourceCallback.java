@@ -1,7 +1,7 @@
-package com.lib.image.extend;
+package com.lib.image.callback;
 
 import android.graphics.Bitmap;
 
-public interface BitmapCallback {
+public interface ResourceCallback {
     void onResourceReady(Bitmap bitmap);
 }

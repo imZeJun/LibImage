@@ -3,16 +3,15 @@ package com.lib.image.worker;
 import android.content.Context;
 import android.text.TextUtils;
 import android.widget.ImageView;
+
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.lib.image.ImageExecutor;
 import com.lib.image.ImageRequest;
-import com.lib.image.annotation.ImageCacheStrategy;
-import com.lib.image.extend.BitmapCallback;
-import com.lib.image.glide.RealBitmapCallback;
-import com.lib.image.glide.RealImageAnimator;
+import com.lib.image.callback.ResourceCallback;
+import com.lib.image.glide.GlideResourceCallback;
 
 public class GlideImageWorkerImpl implements ImageWorker {
 
@@ -23,12 +22,11 @@ public class GlideImageWorkerImpl implements ImageWorker {
     }
 
     @Override
-    public void loadImage(Context context, String url, int placeHolder, int error, @ImageCacheStrategy int cacheStrategy, ImageView imageView) {
+    public void loadImage(Context context, String url, int placeHolder, int error, ImageView imageView) {
         ImageRequest request = new ImageRequest.Builder()
                 .context(context)
                 .placeHolder(placeHolder)
                 .error(error)
-                .cacheStrategy(cacheStrategy)
                 .url(url)
                 .imageView(imageView)
                 .build();
@@ -36,14 +34,13 @@ public class GlideImageWorkerImpl implements ImageWorker {
     }
 
     @Override
-    public void loadImage(Context context, String url, int placeHolder, int error, @ImageCacheStrategy int cacheStrategy, int width, int height, BitmapCallback target) {
+    public void loadImage(Context context, String url, int placeHolder, int error, int width, int height, ResourceCallback target) {
         ImageRequest request = new ImageRequest.Builder()
                 .context(context)
                 .placeHolder(placeHolder)
                 .error(error)
-                .cacheStrategy(cacheStrategy)
                 .url(url)
-                .bitmapCallback(width, height, target)
+                .resourceCallback(width, height, target)
                 .build();
         doRealRequest(request);
     }
@@ -71,8 +68,8 @@ public class GlideImageWorkerImpl implements ImageWorker {
             return;
         }
         //2.2 动画
-        if (request.getImageAnimator() != null) {
-            requestBuilder = requestBuilder.animate(new RealImageAnimator(request.getImageAnimator()));
+        if (request.getAnimator() != null) {
+            requestBuilder = requestBuilder.animate(request.getAnimator());
         }
         //2.3 加载前占位符
         if (request.getPlaceHolder() > 0) {
@@ -83,33 +80,22 @@ public class GlideImageWorkerImpl implements ImageWorker {
             requestBuilder = requestBuilder.error(request.getError());
         }
         //2.5 缓存策略。
-        int cacheCacheStrategy = request.getCacheStrategy() > 0 ? request.getCacheStrategy() : executor.getParam().getCacheStrategy();
-        if (cacheCacheStrategy > 0) {
-            switch (request.getCacheStrategy()) {
-                case ImageCacheStrategy.ALL:
-                    requestBuilder = requestBuilder.diskCacheStrategy(DiskCacheStrategy.ALL);
-                    break;
-                case ImageCacheStrategy.NONE:
-                    requestBuilder = requestBuilder.diskCacheStrategy(DiskCacheStrategy.NONE);
-                    break;
-                case ImageCacheStrategy.SOURCE:
-                    requestBuilder = requestBuilder.diskCacheStrategy(DiskCacheStrategy.SOURCE);
-                    break;
-                case ImageCacheStrategy.RESULT:
-                    requestBuilder = requestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT);
-                    break;
-                default:
-                    break;
-            }
+        DiskCacheStrategy cacheCacheStrategy = request.getCacheStrategy() != null  ? request.getCacheStrategy() : executor.getParam().getCacheStrategy();
+        if (cacheCacheStrategy != null) {
+            requestBuilder = requestBuilder.diskCacheStrategy(cacheCacheStrategy);
+        }
+        //2.6 变换
+        if (request.getBitmapTransformation() != null) {
+            requestBuilder = requestBuilder.bitmapTransform(request.getBitmapTransformation());
         }
         //3.发起请求。
         if (request.getImageView() != null) {
             requestBuilder.into(request.getImageView());
-        } else if (request.getBitmapCallback() != null) {
-            if (request.getBitmapCallbackHeight() > 0 && request.getBitmapCallbackWidth() > 0) {
-                requestBuilder.into(new RealBitmapCallback(request.getBitmapCallbackWidth(), request.getBitmapCallbackHeight(), request.getBitmapCallback()));
+        } else if (request.getResourceCallback() != null) {
+            if (request.getHeight() > 0 && request.getWidth() > 0) {
+                requestBuilder.into(new GlideResourceCallback(request.getWidth(), request.getHeight(), request.getResourceCallback()));
             } else {
-                requestBuilder.into(new RealBitmapCallback(request.getBitmapCallback()));
+                requestBuilder.into(new GlideResourceCallback(request.getResourceCallback()));
             }
         }
 

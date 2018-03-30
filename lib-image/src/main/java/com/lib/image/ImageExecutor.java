@@ -4,9 +4,8 @@ package com.lib.image;
 import android.content.Context;
 import android.widget.ImageView;
 
-import com.lib.image.annotation.ImageCacheStrategy;
 import com.lib.image.annotation.ImageWorkerType;
-import com.lib.image.extend.BitmapCallback;
+import com.lib.image.callback.ResourceCallback;
 import com.lib.image.worker.GlideImageWorkerImpl;
 import com.lib.image.worker.ImageWorker;
 
@@ -58,13 +57,13 @@ public class ImageExecutor implements ImageWorker {
     }
 
     @Override
-    public void loadImage(Context context, String url, int placeHolder, int error, @ImageCacheStrategy int cacheStrategy, ImageView imageView) {
-        getImageWorker().loadImage(context, url, placeHolder, error, cacheStrategy, imageView);
+    public void loadImage(Context context, String url, int placeHolder, int error, ImageView imageView) {
+        getImageWorker().loadImage(context, url, placeHolder, error, imageView);
     }
 
     @Override
-    public void loadImage(Context context, String url, int placeHolder, int error, @ImageCacheStrategy int cacheStrategy, int width, int height, BitmapCallback target) {
-        getImageWorker().loadImage(context, url, placeHolder, error, cacheStrategy, width, height, target);
+    public void loadImage(Context context, String url, int placeHolder, int error, int width, int height, ResourceCallback target) {
+        getImageWorker().loadImage(context, url, placeHolder, error, width, height, target);
     }
 
     @Override

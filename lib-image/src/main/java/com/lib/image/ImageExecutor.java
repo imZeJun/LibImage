@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import com.lib.image.annotation.ImageCacheStrategy;
 import com.lib.image.annotation.ImageWorkerType;
 import com.lib.image.extend.BitmapCallback;
-import com.lib.image.worker.GlideImageWorker;
+import com.lib.image.worker.GlideImageWorkerImpl;
 import com.lib.image.worker.ImageWorker;
 
 public class ImageExecutor implements ImageWorker {
@@ -27,19 +27,27 @@ public class ImageExecutor implements ImageWorker {
     public void buildWorker(Context context, ImageWorkerParam param) {
         this.context = context.getApplicationContext();
         this.param = param;
-        ImageWorker worker;
-        switch (param.getWorkerType()) {
+        Holder.INSTANCE.worker = createWorker(param.getWorkerType());
+    }
+
+    private ImageWorker createWorker(@ImageWorkerType int workerType) {
+        ImageWorker newWorker;
+        switch (workerType) {
             case ImageWorkerType.GLIDE:
-                worker = new GlideImageWorker(this);
+                newWorker = new GlideImageWorkerImpl(this);
                 break;
             default:
-                worker = new GlideImageWorker(this);
+                newWorker = new GlideImageWorkerImpl(this);
         }
-        Holder.INSTANCE.worker = worker;
+        return newWorker;
     }
 
     public ImageWorkerParam getParam() {
         return param;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     public ImageWorker getImageWorker() {

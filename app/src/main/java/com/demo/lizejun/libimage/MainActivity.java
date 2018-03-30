@@ -10,17 +10,33 @@ import com.lib.image.annotation.ImageCacheStrategy;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ImageView mImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ImageView view = (ImageView) findViewById(R.id.iv_content);
+        mImageView = (ImageView) findViewById(R.id.iv_content);
+        startCustomRequest();
+    }
+
+    private void startRequest() {
         ImageExecutor.getInstance().loadImage(
                 this,
                 "http://i.imgur.com/DvpvklR.png",
                 0,
                 0,
                 ImageCacheStrategy.SOURCE,
-                view);
+                mImageView);
+    }
+
+    private void startCustomRequest() {
+        ImageRequest request = new ImageRequest.Builder()
+                .context(this)
+                .url("http://i.imgur.com/DvpvklR.png")
+                .cacheStrategy(ImageCacheStrategy.SOURCE)
+                .imageView(mImageView)
+                .build();
+        ImageExecutor.getInstance().loadImage(request);
     }
 }

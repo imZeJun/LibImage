@@ -20,7 +20,7 @@ public class ImageWorkerParam {
         this.cacheStrategy = builder.cacheStrategy;
     }
 
-    public int getWorkerType() {
+    public @ImageWorkerType int getWorkerType() {
         return workerType;
     }
 
@@ -36,7 +36,7 @@ public class ImageWorkerParam {
         return externalCache;
     }
 
-    public int getCacheStrategy() {
+    public @ImageCacheStrategy int getCacheStrategy() {
         return cacheStrategy;
     }
 

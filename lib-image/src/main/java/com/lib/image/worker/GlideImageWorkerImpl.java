@@ -14,11 +14,11 @@ import com.lib.image.extend.BitmapCallback;
 import com.lib.image.glide.RealBitmapCallback;
 import com.lib.image.glide.RealImageAnimator;
 
-public class GlideImageWorker implements ImageWorker {
+public class GlideImageWorkerImpl implements ImageWorker {
 
     private ImageExecutor executor;
 
-    public GlideImageWorker(ImageExecutor executor) {
+    public GlideImageWorkerImpl(ImageExecutor executor) {
         this.executor = executor;
     }
 
@@ -55,7 +55,7 @@ public class GlideImageWorker implements ImageWorker {
 
     private void doRealRequest(ImageRequest request) {
         //1.构造 RequestManager。
-        Context context = request.getContext();
+        Context context = request.getContext() != null ? request.getContext() : executor.getContext();
         if (context == null) {
             return;
         }
@@ -83,10 +83,7 @@ public class GlideImageWorker implements ImageWorker {
             requestBuilder = requestBuilder.error(request.getError());
         }
         //2.5 缓存策略。
-        int cacheCacheStrategy = request.getCacheStrategy();
-        if (cacheCacheStrategy <= 0) {
-            cacheCacheStrategy = executor.getParam().getCacheStrategy();
-        }
+        int cacheCacheStrategy = request.getCacheStrategy() > 0 ? request.getCacheStrategy() : executor.getParam().getCacheStrategy();
         if (cacheCacheStrategy > 0) {
             switch (request.getCacheStrategy()) {
                 case ImageCacheStrategy.ALL:
